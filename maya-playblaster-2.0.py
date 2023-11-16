@@ -22,11 +22,6 @@ def getHW2RenderCommand(c_scene_path, c_out_dir, c_workspace, c_scene, c_episode
     result += r'else if ( size(\$camName) == 0 ){ string \$splitName[] = stringToStringArray(\$SCENE,\"_\"); \$camName = \$EPISODE+\"_\"+(int)\$splitName[1]+\"Shape\"; }; ';
     result += r'print(\"tPlayblast for \"+\$SCENE+\" using camera \"+\$camName+\". Textured: \"+\$ARG_TEXTURED); ';
     result += r'setAttr(\$camName+\".rnd\", 1); ';
-    #result += r'string \$lightsArray[] = \`ls -type \"light\"\`; ';
-    #result += r'for (\$lightItem in \$lightsArray){ delete \$lightItem; }; ';
-    #result += r'modelEditor -gamma 1.0 -edit -displayLights \"default\" -displayAppearance \"smoothShaded\" -displayTextures \$ARG_TEXTURED  -textures \$ARG_TEXTURED modelPanel4; ';
-    #result += r'colorManagementPrefs -edit -viewTransformName \"sRGB gamma\"; ';
-    #result += r'colorManagementPrefs -edit -cmEnabled 1; ';
     result += r'setAttr \"defaultRenderGlobals.ren\" -type \"string\" \"mayaHardware2\"; ';
     result += r'setAttr \"defaultResolution.width\" 1920; ';
     result += r'setAttr \"defaultResolution.height\" 1080; ';
@@ -41,15 +36,7 @@ def getHW2RenderCommand(c_scene_path, c_out_dir, c_workspace, c_scene, c_episode
     result += r'setAttr \"defaultRenderGlobals.endFrame\" \`playbackOptions -query -maxTime\`; ';
     result += r'setAttr \"defaultRenderGlobals.imageFilePrefix\" -type \"string\" \$OUT_DIR; ';
     result += r'setAttr \"defaultRenderGlobals.periodInExt\" 1; setAttr \"defaultRenderGlobals.useMayaFileName\" 0; ';
-    #result += r'setAttr \"hardwareRenderingGlobals.motionBlurEnable\" 0; ';
-    #result += r'setAttr \"hardwareRenderingGlobals.ssaoEnable\" 1; ';
-    #result += r'setAttr \"hardwareRenderingGlobals.msaa\" 1; ';
-    #result += r'setAttr \"hardwareRenderingGlobals.gammaCorrectionEnable\" 1; ';
-    #result += r'setAttr \"hardwareRenderingGlobals.gammaValue\" 1.2; ';
-    #result += r'setAttr \"hardwareRenderingGlobals.enableTextureMaxRes\" 1; ';
-    #result += r'setAttr \"hardwareRenderingGlobals.textureMaxResMode\" 0; ';
-    #result += r'setAttr \"hardwareRenderingGlobals.batchRenderControls.lightingMode\" 0; ';
-    #result += r'setAttr \"hardwareRenderingGlobals.batchRenderControls.renderMode\" 4;" ';
+    result += r'setAttr \"hardwareRenderingGlobals.motionBlurEnable\" 0; ';
     result += c_scene_path;
     
     return result;
@@ -110,18 +97,12 @@ if __name__=='__main__':
     for f in os.listdir(outPath):
         os.remove(os.path.join(outPath, f))
     print("\t\tOUTPUT PATH cleanup complete")
-
-    print('Cam Arg:'+str(args.cam)+'.');
     
     hw2command = getHW2RenderCommand(scenePath, outPath+scene, i4k.HOME, scene, episode, args.cam, getInt_(args.textured));
-    print(str(scenePath)+', '+str(outPath)+str(scene)+', '+str(i4k.HOME)+', '+str(scene)+', '+str(episode)+', '+str(args.cam)+', '+str(getInt_(args.textured)));
-    print('Command: '+str(hw2command));
+
     playblast_process = subprocess.Popen(hw2command, stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True );
-    print('playblast_process');
     playblast_out,playblast_err = playblast_process.communicate();
-    print(' playblast_out');
     playblast_exicode = playblast_process.returncode;
-    print(' playblast_exicode ');
     print(playblast_out);
     if str(playblast_exicode) != '0':
         print(playblast_err);
